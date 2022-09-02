@@ -20,6 +20,7 @@ const Header = () => {
   const [namiwallet, setNami] = useState(false);
   const [eternlwallet, setEternl] = useState(false);
   const [isModel, setIsModel] = useState(false);
+  const [walletConnected, setWalletConnected] = useState(false);
   const ref = useRef();
   const navigate = useNavigate();
   useEffect(() => {
@@ -46,6 +47,13 @@ const Header = () => {
     setIsModel(!isModel);
   };
 
+  // const disconnectWallet = async () => {
+  //   if(window.cardano.nami) await window.cardano.nami.enable(false);
+  //   else if(window.cardano.eternl) await window.cardano.eternl.enable(false);
+  //   setWalletConnected(false);
+
+  // };
+
   // Show Connected Wallet NFTs
   const onShowWalletNFTs = () => {
     navigate("/walletData")
@@ -68,6 +76,7 @@ const Header = () => {
             JSON.stringify({ wallet: "nami", token: result })
           );
         }
+        setWalletConnected(true);
         toast.success("Login successful!");
       } else if (API === "eternl") {
         var message = Buffer.from(
@@ -82,6 +91,7 @@ const Header = () => {
             "wallet",
             JSON.stringify({ wallet: "eternl", token: result })
           );
+          setWalletConnected(true);
           toast.success("Login successful!");
         }
       }
@@ -189,6 +199,7 @@ const Header = () => {
             <h1 className="font-bold ">Explore</h1>
             <h1 className="font-bold">Ranking</h1>
             <h1 className="font-bold">Create</h1>
+            
             <button
               className="buttonborder menufont text-white font-bold py-3 lg:px-10 md:px-5"
               onClick={openModel}

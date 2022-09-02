@@ -46,23 +46,28 @@ import { blake2b } from "blakejs";
 let Buffer = require('buffer/').Buffer
 let blake = require('blakejs')
 
-class NamiWalletApi {
-    constructor(serilizationLib, wallet, apiKey) {
-        this.apiKey = apiKey
-        this.Wallet = wallet
-        this.S = serilizationLib
+let selectedWallet;
+
+class CardanoWalletAPI {
+    constructor(wallet) {
+        selectedWallet = wallet;
+        this.Wallet = window.cardano
     }
 
-    async isInstalled() {
+    getWallet = () => {
+        return this.Wallet;
+    };
+
+    isInstalled = async () => {
         if (this.Wallet) return true
         else return false
-    }
+    };
 
-    async isEnabled() {
+    isEnabled = async () => {
         return await this.Wallet.isEnabled()
-    }
+    };
 
-    async enable() {
+    enable = async () => {
         if (!await this.isEnabled()) {
             try {
                 return await this.Wallet.enable()
@@ -70,5 +75,7 @@ class NamiWalletApi {
                 throw error
             }
         }
-    }
+    };
 }
+
+export default CardanoWalletAPI;

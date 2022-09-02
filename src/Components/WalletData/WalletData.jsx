@@ -1,28 +1,35 @@
 import React, { useEffect, useState } from "react";
 import "./WalletData.css";
-import cardanoWalletAPI from '../../APIs/cardanoWalletAPI';
+import CardanoWalletAPI from '../../APIs/CardanoWalletAPI';
+
 let wallet;
 
 const WalletData = () => {
 
+    const [selectedWallet, setSelectedWallet] = useState(undefined);
+
     useEffect(() => {
-        async function t() {
+        console.log(window.cardano);
+        console.log(window.cardano.isEnabled());
+        console.log("WalletData");
+        
+        
+        if (window.cardano.nami)
+            setSelectedWallet("nami");
+        else if (window.cardano.eternl)
+            setSelectedWallet("eternl");
 
-            const S = await Cardano();
-            wallet = new cardanoWalletAPI(
-                S,
-                window.cardano,
-               blockfrostApiKey
-            )
-
-
-            if (await wallet.isInstalled()) {
-                await wallet.isEnabled().then(result => { setConnected(result) })
-
-            }
+        
+        async function f() {
+            wallet = new CardanoWalletAPI(selectedWallet);
+            
+            console.log(wallet.getWallet());
+            console.log(await wallet.isInstalled()) 
+            console.log(await wallet.enable())
+            
         }
-
-        t()
+        
+        f()
     });
 
     return (
