@@ -8,6 +8,7 @@ import octopuss from "../../Assets/VoomioImages/octopuss.svg";
 import magnifyGlass from "../../Assets/VoomioImages/magnifying-glass.svg";
 import MenuAlt3Outline from "../../Assets/VoomioImages/MenuAlt3Outline.svg";
 import close from "../../Assets/VoomioImages/X.svg";
+import { useNavigate } from "react-router";
 
 import { Link } from "react-router-dom";
 let Buffer = require("buffer/").Buffer;
@@ -20,6 +21,7 @@ const Header = () => {
   const [eternlwallet, setEternl] = useState(false);
   const [isModel, setIsModel] = useState(false);
   const ref = useRef();
+  const navigate = useNavigate();
   useEffect(() => {
     pollWallets();
     window.scrollTo(0, 0);
@@ -43,6 +45,12 @@ const Header = () => {
   const openModel = () => {
     setIsModel(!isModel);
   };
+
+  // Show Connected Wallet NFTs
+  const onShowWalletNFTs = () => {
+    navigate("/walletData")
+  };
+
   // connect wallet
   const signhash = async (API) => {
     try {
@@ -186,6 +194,12 @@ const Header = () => {
               onClick={openModel}
             >
               Connect Wallet
+            </button>
+            <button
+              className="buttonborder menufont text-white font-bold py-3 lg:px-10 md:px-5"
+              onClick={onShowWalletNFTs}
+            >
+              ShowWalletNFTs
             </button>
           </div>
         </div>
