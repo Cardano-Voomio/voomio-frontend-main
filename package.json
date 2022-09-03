@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^6.4.5",
     "@emurgo/cardano-serialization-lib-asmjs": "^10.2.0",
+    "@emurgo/cardano-serialization-lib-browser": "^11.0.5",
+    "@emurgo/cip14-js": "^3.0.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -15,6 +18,7 @@
     "node-fetch": "^2.6.7",
     "react": "^18.1.0",
     "react-copy-to-clipboard": "^5.1.0",
+    "react-datetime-picker": "^3.5.0",
     "react-dom": "^18.1.0",
     "react-elastic-carousel": "^0.11.4",
     "react-router": "^6.3.0",
@@ -23,11 +27,12 @@
     "react-toastify": "^9.0.5",
     "socket.io-client": "^4.5.1",
     "styled-components": "^5.3.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "web3-utils": "^1.7.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
