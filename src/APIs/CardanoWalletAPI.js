@@ -98,6 +98,7 @@ class CardanoWalletAPI {
         const lovelace = availableAda.to_str();
         console.log("assets", protocolParameter.minUtxo)
         const assets = [];
+        const nfts = [];
         if (value.multiasset()) {
             const multiAssets = value.multiasset().keys();
             for (let j = 0; j < multiAssets.len(); j++) {
@@ -124,14 +125,15 @@ class CardanoWalletAPI {
                     if (!result || result.error) {
                         result = {};
                     }
-                    console.log(result);
-
+                    console.log(result.onchain_metadata);
+                    const image = result?.onchain_metadata?.image?.replace("ipfs://", "https://ipfs.io/ipfs/");
                     assets.push({
                         unit: asset,
                         quantity: quantity.to_str(),
                         policy: _policy,
                         name: HexToAscii(_name),
                         fingerprint,
+                        image: image
                     });
                 }
             }
@@ -141,6 +143,46 @@ class CardanoWalletAPI {
             "lovelace": lovelace,
             "assets": assets
         }
+    };
+
+    getAsset = async (unit) => {
+
+        const asset = {};
+        asset.unit = unit;
+        asset.policy = unit.slice(0, 56);
+        asset.name = Buffer.from(unit.slice(56), 'hex').toString();
+        asset.fingerprint = new AssetFingerprint(
+            Buffer.from(asset.policy, 'hex'),
+            Buffer.from(asset.name)
+        ).fingerprint();
+        let result = await this._blockfrostRequest({
+            endpoint: `/assets/${asset}`
+        });
+        if (!result || result.error) {
+            result = {};
+            asset.mint = true;
+        }
+        asset.displayName =
+            (result.onchain_metadata && result.onchain_metadata.name) ||
+            (result.metadata && result.metadata.name) ||
+            asset.name;
+        asset.image =
+            (result.onchain_metadata &&
+                result.onchain_metadata.image &&
+                linkToSrc(
+                    convertMetadataPropToString(result.onchain_metadata.image)
+                )) ||
+            (result.metadata &&
+                result.metadata.logo &&
+                linkToSrc(result.metadata.logo, true)) ||
+            '';
+        asset.decimals = (result.metadata && result.metadata.decimals) || 0;
+        if (!asset.name) {
+            if (asset.displayName) asset.name = asset.displayName[0];
+            else asset.name = '-';
+        }
+
+        return asset;
     };
 
     getApiKey(networkId) {
@@ -1120,6 +1162,8 @@ class CardanoWalletAPI {
             'https://cardano-mainnet.blockfrost.io/api/v0'
         let blockfrostApiKey = this.getApiKey(networkId)
 
+        console.log("_blockfrostRequest_endpoint(param):::", endpoint);
+
         try {
             return await (await fetch(`${networkEndpoint}${endpoint}`, {
                 headers: {
@@ -1139,29 +1183,56 @@ class CardanoWalletAPI {
 //////////////////////////////////////////////////
 //Auxiliary
 
-function AsciiToBuffer(string) {
+const AsciiToBuffer = (string) => {
     return Buffer.from(string, "ascii")
-}
+};
 
-function HexToBuffer(string) {
+const HexToBuffer = (string) => {
     return Buffer.from(string, "hex")
-}
+};
 
-function AsciiToHex(string) {
+const AsciiToHex = (string) => {
     return AsciiToBuffer(string).toString('hex')
-}
+};
 
-function HexToAscii(string) {
+const HexToAscii = (string) => {
     return HexToBuffer(string).toString("ascii")
-}
+};
 
-function BufferToAscii(buffer) {
+const BufferToAscii = (buffer) => {
     return buffer.toString('ascii')
-}
+};
 
-function BufferToHex(buffer) {
+const BufferToHex = (buffer) => {
     return buffer.toString("hex")
-}
+};
 
+const convertMetadataPropToString = (src) => {
+    if (typeof src === 'string') return src;
+    else if (Array.isArray(src)) return src.join('');
+    return null;
+};
+
+const linkToSrc = (link, base64 = false) => {
+    const base64regex =
+        /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    const ipfs = 'https://ipfs.blockfrost.dev/ipfs';
+    if (link.startsWith('https://')) return link;
+    else if (link.startsWith('ipfs://'))
+        return (
+            ipfs +
+            '/' +
+            link.split('ipfs://')[1].split('ipfs/').slice(-1)[0]
+        );
+    else if (
+        (link.startsWith('Qm') && link.length === 46) ||
+        (link.startsWith('baf') && link.length === 59)
+    ) {
+        return ipfs + '/' + link;
+    } else if (base64 && base64regex.test(link))
+        return 'data:image/png;base64,' + link;
+    else if (link.startsWith('data:image')) return link;
+    return null;
+};
 
 export default CardanoWalletAPI;
