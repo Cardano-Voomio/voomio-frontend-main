@@ -58,7 +58,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "env-cmd -f .env craco start",
+    "start": "env-cmd -f .env.development craco start",
     "build:testnet": "set \"GENERATE_SOURCEMAP=false\" && env-cmd -f .env.development craco build",
     "build:mainnet": "GENERATE_SOURCEMAP=false env-cmd -f .env.production craco build",
     "deploy:testnet": "yarn run build:testnet && firebase use testnet && firebase deploy --only hosting",
