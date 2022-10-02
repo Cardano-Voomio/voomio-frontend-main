@@ -1,0 +1,27 @@
+@import "bootstrap/scss/functions";
+
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/root";
+
+@import "bootstrap/scss/grid";
+
+.voomio-5-col {
+
+    @include media-breakpoint-up(xs){
+        @include row-cols(1);
+    }
+
+    @include media-breakpoint-up(sm){
+        @include row-cols(2);
+    }
+
+    @include media-breakpoint-up(md){
+        @include row-cols(3);
+    }
+
+    @include media-breakpoint-up(xl){
+        @include row-cols(5);
+    }
+}
